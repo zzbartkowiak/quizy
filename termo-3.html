@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rozgrzewka: termodynamika 3 – silniki i zasady</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gelasio:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#F5F7FA; --paper:#FFFFFF; --ink:#16233A; --muted:#55627A; --line:#D7DEE8;
+  --navy:#1B3A6B; --azure:#2E6DA4; --berry:#C2185B; --emerald:#1B7A5A; --amber:#B8860B;
+  --ok-bg:#E6F4EE; --bad-bg:#FBE7EF; --note-bg:#EEF4FB; --sel-bg:#E3EDF8;
+  --display:"Gelasio","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --body:"Source Sans 3","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1724; --paper:#162236; --ink:#E6ECF5; --muted:#9AA8BE; --line:#2A3A55;
+  --navy:#9DB8E6; --azure:#6FA6DC; --berry:#F06292; --emerald:#4DC497; --amber:#E2B34A;
+  --ok-bg:#123629; --bad-bg:#3A1626; --note-bg:#17304F; --sel-bg:#1E3A5F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1724; --paper:#162236; --ink:#E6ECF5; --muted:#9AA8BE; --line:#2A3A55;
+  --navy:#9DB8E6; --azure:#6FA6DC; --berry:#F06292; --emerald:#4DC497; --amber:#E2B34A;
+  --ok-bg:#123629; --bad-bg:#3A1626; --note-bg:#17304F; --sel-bg:#1E3A5F; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-top:max(20px,env(safe-area-inset-top,0px));padding-bottom:max(40px,env(safe-area-inset-bottom,0px))}
+.wrap{max-width:660px;margin:0 auto;display:flex;flex-direction:column;gap:18px;width:100%}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--azure);font-weight:700}
+h1,h2{font-family:var(--display);color:var(--navy);text-wrap:balance;margin:0;line-height:1.2}
+h1{font-size:30px} h2{font-size:21px;font-weight:600}
+p{margin:0}
+.muted{color:var(--muted)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+label{font-weight:600}
+input[type=text]{font:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+input[type=text]:focus-visible{outline:3px solid var(--azure);outline-offset:1px}
+.btn{font:inherit;font-weight:700;border:0;border-radius:8px;padding:13px 18px;background:var(--navy);color:var(--paper);cursor:pointer;align-self:flex-start}
+.btn.secondary{background:transparent;color:var(--navy);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.facts{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:15px;color:var(--muted)}
+.facts b{color:var(--ink)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.bar>span{display:block;height:100%;background:var(--azure);transition:width .25s}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.zhead{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.zhead .z{font-family:var(--display);font-weight:700;font-size:19px;color:var(--navy)}
+.zhead .t{font-size:13px;color:var(--muted)}
+.ctx{border-left:3px solid var(--line);padding-left:12px}
+.cmd{font-weight:700}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{font:inherit;text-align:left;display:flex;gap:12px;align-items:flex-start;width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer}
+.opt .k{font-weight:700;color:var(--azure);min-width:1.3em}
+.opt:hover:not(:disabled){border-color:var(--azure)}
+.opt.sel{border-color:var(--azure);background:var(--sel-bg)}
+.opt:disabled,.pill:disabled,.pfb:disabled{cursor:default}
+.ok{border-color:var(--emerald)!important;background:var(--ok-bg)!important}
+.bad{border-color:var(--berry)!important;background:var(--bad-bg)!important}
+.pf{display:flex;flex-direction:column;gap:10px}
+.pfrow{display:grid;grid-template-columns:1.6em 1fr auto;gap:10px;align-items:start;border-top:1px solid var(--line);padding-top:10px}
+.pfrow .n{font-weight:700;color:var(--azure)}
+.pfrow .s{min-width:0}
+.pfbtns{display:flex;gap:6px}
+.pfb{font:inherit;font-weight:700;width:44px;height:40px;border:1.5px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer}
+.pfb.sel{border-color:var(--azure);background:var(--sel-bg)}
+.note{grid-column:2 / -1;font-size:15px;display:flex;flex-direction:column;gap:6px}
+.fill{line-height:2.3}
+.gap{display:inline-flex;gap:4px;flex-wrap:wrap;vertical-align:middle}
+.pill{font:inherit;font-size:16px;line-height:1.3;padding:5px 10px;border:1.5px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);cursor:pointer}
+.pill.sel{border-color:var(--azure);background:var(--sel-bg);font-weight:600}
+.gaplab{font-size:12px;font-weight:700;color:var(--azure);margin-right:2px}
+.abgrid{display:flex;flex-direction:column;gap:12px}
+.abrow{display:flex;gap:10px;flex-wrap:wrap}
+.abrow .opt{flex:1 1 140px;width:auto}
+.why{border-left:4px solid var(--amber);background:var(--note-bg);padding:12px 14px;border-radius:0 8px 8px 0;display:flex;flex-direction:column;gap:10px}
+.verdict{font-weight:700}
+.verdict.good{color:var(--emerald)} .verdict.wrong{color:var(--berry)}
+.wrongbox{border-left:4px solid var(--berry);background:var(--bad-bg);padding:10px 12px;border-radius:0 8px 8px 0;display:flex;flex-direction:column;gap:6px;font-size:16px}
+.wrongbox .h{font-weight:700;color:var(--berry);font-size:14px;text-transform:uppercase;letter-spacing:.04em}
+.stepsbox{display:flex;flex-direction:column;gap:6px}
+.stepsbox .h{font-weight:700;color:var(--navy);font-size:14px;text-transform:uppercase;letter-spacing:.04em}
+.stepsbox ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:4px}
+.formula{font-family:var(--display);font-style:italic;white-space:nowrap}
+.score{font-family:var(--display);font-size:56px;color:var(--navy);line-height:1;font-variant-numeric:tabular-nums}
+.score small{font-size:24px;color:var(--muted)}
+.mistakes{display:flex;flex-direction:column;gap:10px;padding:0;margin:0;list-style:none}
+.mistakes li{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:2px}
+.mistakes .n{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.copybox{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;background:var(--bg);border:1px dashed var(--line);border-radius:8px;padding:12px;white-space:pre-wrap;word-break:break-word;user-select:all}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.toast{font-size:14px;color:var(--emerald);font-weight:600}
+textarea{font:inherit;font-size:15px;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%;resize:vertical}
+textarea:focus-visible{outline:3px solid var(--azure);outline-offset:1px}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;color:var(--muted);font-weight:600}
+.meter{display:inline-block;height:8px;border-radius:4px;background:var(--line);width:80px;vertical-align:middle;overflow:hidden;margin-right:8px}
+.meter>i{display:block;height:100%;background:var(--berry)}
+.hot{color:var(--berry);font-weight:700}
+.keylist{display:flex;flex-direction:column;gap:14px}
+.keyitem{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:6px}
+.keyitem .ans{color:var(--emerald);font-weight:600}
+@media (prefers-reduced-motion: reduce){.bar>span{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+  <section id="start" class="wrap">
+    <div>
+      <div class="eyebrow">Rozgrzewka przed lekcją · fizyka rozszerzona</div>
+      <h1>Termodynamika 3: I zasada, silniki, II zasada</h1>
+    </div>
+    <div class="facts">
+      <span><b>8</b> zadań</span><span><b>16</b> pkt</span><span>około <b>7 min</b></span><span>zadania w stylu matury CKE</span>
+    </div>
+    <div class="card">
+      <label for="imie">Twoje imię i pierwsza litera nazwiska</label>
+      <input type="text" id="imie" placeholder="np. Ola K." autocomplete="name" maxlength="40">
+      <p class="muted" style="font-size:15px">Zaznacz odpowiedź i kliknij „Sprawdź”. Zobaczysz, co jest dobrze, co źle i dlaczego. Gdy się pomylisz, dostaniesz też wyjaśnienie Twojego błędu i rozwiązanie krok po kroku. Na końcu skopiujesz wynik i wkleisz go na Discordzie.</p>
+      <p id="nameMsg" role="alert" style="color:var(--berry);font-weight:600;font-size:15px" hidden>Wpisz imię i pierwszą literę nazwiska (co najmniej 2 znaki).</p>
+      <button class="btn" id="startBtn">Zaczynam</button>
+    </div>
+    <p class="muted" style="font-size:14px">Zakres: podstawa programowa, fizyka rozszerzona, dział VI (pkt 8, 13–16): I zasada w przemianach gazu, praca gazu, ciepło molowe, silniki i pompy cieplne, cykl Carnota, II zasada, procesy nieodwracalne.</p>
+  </section>
+
+  <section id="quiz" class="wrap" hidden>
+    <div class="qhead"><span id="qnum"></span><span id="qscore"></span></div>
+    <div class="bar"><span id="qbar" style="width:0%"></span></div>
+    <div class="card" id="qcard"></div>
+  </section>
+
+  <section id="result" class="wrap" hidden>
+    <div>
+      <div class="eyebrow">Wynik</div>
+      <h1 id="rname"></h1>
+    </div>
+    <div class="score" id="rscore"></div>
+    <div class="card">
+      <h2>Wyślij wynik</h2>
+      <p>Skopiuj wynik i wklej go na Discordzie na kanale lekcji.</p>
+      <div class="copybox" id="rcopy"></div>
+      <div class="row">
+        <button class="btn" id="copyBtn">Kopiuj wynik</button>
+        <span class="toast" id="copyMsg" hidden></span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Do powtórki</h2>
+      <ul class="mistakes" id="rmiss"></ul>
+    </div>
+    <button class="btn secondary" id="againBtn">Rozwiąż jeszcze raz</button>
+  </section>
+
+  <section id="teacher" class="wrap" hidden>
+    <div>
+      <div class="eyebrow">Tylko dla Ciebie · panel nauczyciela</div>
+      <h1 id="tTitle"></h1>
+    </div>
+    <div class="card">
+      <h2>Wyniki uczniów</h2>
+      <label for="paste">Wklej wiadomości z kanału Discorda (może być cały kanał naraz)</label>
+      <textarea id="paste" rows="5"></textarea>
+      <div class="row"><button class="btn" id="statBtn">Policz</button><span class="muted" id="statInfo"></span></div>
+      <div id="stats"></div>
+    </div>
+    <div class="card">
+      <h2>Klucz odpowiedzi</h2>
+      <div id="key" class="keylist"></div>
+    </div>
+    <button class="btn secondary" id="backBtn">Wróć do quizu</button>
+  </section>
+
+  <button class="btn secondary" id="teacherBtn" hidden style="align-self:center">Panel nauczyciela</button>
+
+</main>
+
+<script>
+const QUIZ = "Termodynamika 3";
+const T = [
+  { type:"mc", topic:"I zasada termodynamiki",
+    ctx:"Gaz w cylindrze z ruchomym tłokiem pobiera ciepło z palnika, a mimo to jego temperatura się nie zmienia. I zasada termodynamiki: <span class=\"formula\">ΔU = Q + W</span>, gdzie W to praca wykonana NAD gazem.",
+    cmd:"Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.",
+    stem:"Jest to możliwe, gdy gaz w tym samym czasie",
+    opts:["rozpręża się i przesuwa tłok.","jest sprężany przez tłok.","jest w sztywnym, zamkniętym naczyniu.","ma bardzo dużą masę."], ok:0,
+    w:{ 1:"Przy sprężaniu energia też wchodzi do gazu (praca nad gazem jest dodatnia). Gaz dostawałby energię z dwóch stron, więc jego energia wewnętrzna i temperatura musiałyby rosnąć.",
+        2:"W sztywnym naczyniu gaz nie może wykonać pracy (W = 0). Wtedy całe pobrane ciepło idzie na wzrost energii wewnętrznej — temperatura musi rosnąć.",
+        3:"Duża masa sprawia tylko, że temperatura rośnie wolniej. Ale skoro gaz pobiera ciepło i nic nie oddaje, jego temperatura i tak by rosła. Żeby stała, gaz musi energię jednocześnie oddawać — przez pracę." },
+    steps:["Temperatura stała → energia wewnętrzna gazu doskonałego stała: ΔU = 0.","Z I zasady: 0 = Q + W, więc W = −Q.","Q > 0 (gaz pobiera ciepło), więc W < 0 — praca NAD gazem jest ujemna.","Czyli to gaz wykonuje pracę: rozpręża się i oddaje energię, przesuwając tłok."],
+    e:"Przemiana izotermiczna: <span class=\"formula\">ΔU = 0, więc Q = −W</span>.<br><b>Zapamiętaj:</b> energia dostarczona do gazu jest „+”, energia oddana przez gaz jest „−”. I zasada to po prostu zasada zachowania energii." },
+
+  { type:"pf", topic:"Praca gazu",
+    ctx:"Gaz rozpręża się pod stałym ciśnieniem (przemiana izobaryczna). Przemianę przedstawiono na wykresie p(V).",
+    cmd:"Oceń prawdziwość poniższych zdań. Zaznacz P, jeśli zdanie jest prawdziwe, albo F – jeśli jest fałszywe.",
+    items:[
+      { s:"Rozprężający się gaz wykonuje pracę nad otoczeniem.", v:true,
+        e:"Gaz pcha tłok i przesuwa go, czyli wykonuje pracę. Praca nad gazem jest wtedy ujemna.",
+        w:"Gdy gaz się rozpręża, naciska na tłok i go przesuwa — działa siłą na drodze, więc wykonuje pracę. Przy sprężaniu jest odwrotnie: to otoczenie wykonuje pracę nad gazem." },
+      { s:"Praca gazu jest równa polu pod wykresem p(V).", v:true,
+        e:"Tak jest w każdej przemianie, nie tylko izobarycznej. Tu pole to prostokąt p·ΔV.",
+        w:"Na wykresie p(V) pole pod linią przemiany to iloczyn „wysokość × szerokość”, czyli ciśnienie × zmiana objętości = praca. Dla krzywej linii liczy się pole pod krzywą." },
+      { s:"Temperatura gazu w tej przemianie się nie zmienia.", v:false,
+        e:"Przy stałym ciśnieniu <span class=\"formula\">V/T = const</span>: objętość rośnie, więc temperatura też rośnie.",
+        w:"Stałe jest ciśnienie, a nie temperatura (to izobara, nie izoterma). Żeby gaz rozprężył się pod tym samym ciśnieniem, trzeba go ogrzać — większa objętość oznacza wyższą temperaturę." }
+    ]},
+
+  { type:"mc", topic:"Przemiana adiabatyczna",
+    ctx:"Powietrze w pompce rowerowej sprężamy bardzo szybko. Ciepło nie zdąży uciec do otoczenia (Q = 0).",
+    cmd:"Dokończ zdanie. Wybierz właściwą odpowiedź spośród podanych.",
+    stem:"Temperatura powietrza w pompce",
+    opts:["rośnie, bo praca nad gazem zwiększa jego energię.","nie zmienia się, bo gaz nie wymienia ciepła.","maleje, bo gaz oddaje energię na zewnątrz.","rośnie, bo gaz pobiera ciepło z otoczenia."], ok:0,
+    w:{ 1:"Q = 0 znaczy tylko, że nie ma wymiany ciepła. Energia może wejść inną drogą: przez pracę. Pchając tłok, wykonujesz pracę nad gazem, więc ΔU = W > 0 i temperatura rośnie.",
+        2:"Przy sprężaniu energia wchodzi do gazu (Ty wykonujesz nad nim pracę), a nie wychodzi. Gaz ochładza się przy adiabatycznym ROZPRĘŻANIU, np. gaz z dezodorantu.",
+        3:"Temperatura rzeczywiście rośnie, ale nie przez ciepło — w przemianie adiabatycznej Q = 0. Przyczyną jest praca wykonana nad gazem." },
+    e:"Adiabata: <span class=\"formula\">Q = 0, ΔU = W</span>.<br><b>Zapamiętaj:</b> szybkie sprężanie grzeje (silnik Diesla zapala paliwo samym sprężeniem), szybkie rozprężanie chłodzi." },
+
+  { type:"fill", topic:"Ciepło molowe",
+    ctx:"1 mol gazu doskonałego ogrzewamy o 1 K dwa razy: raz przy stałej objętości, raz przy stałym ciśnieniu. Ciepło molowe (C) to ciepło potrzebne do ogrzania 1 mola o 1 K.",
+    cmd:"Uzupełnij zdania. Wybierz właściwą odpowiedź w każdej luce.",
+    parts:["Więcej ciepła potrzeba przy stałym ",
+      {o:["ciśnieniu","objętości"], w:"Przy stałej objętości gaz nie może się rozprężyć, więc całe ciepło idzie na wzrost energii wewnętrznej. Przy stałym ciśnieniu gaz się rozpręża i część ciepła „wydaje” na pracę — trzeba więc dostarczyć więcej."},
+      ", bo część ciepła idzie wtedy na ",
+      {o:["pracę rozprężania gazu","wzrost energii wewnętrznej"], w:"Wzrost energii wewnętrznej przy ogrzaniu o 1 K jest w obu przypadkach TAKI SAM (U zależy tylko od temperatury). Różnica bierze się z pracy, którą gaz wykonuje, rozprężając się."},
+      ". Dla gazu doskonałego różnica C_p − C_v jest równa ",
+      {o:["R","0"], w:"Gdyby różnica była 0, oba ogrzewania wymagałyby tyle samo ciepła. A przy stałym ciśnieniu dochodzi praca rozprężania, która dla 1 mola i 1 K wynosi dokładnie R — stałą gazową."},
+      "."],
+    e:"<span class=\"formula\">C_p − C_v = R</span>.<br><b>Zapamiętaj:</b> C_p jest zawsze większe od C_v, bo przy stałym ciśnieniu gaz dodatkowo wykonuje pracę." },
+
+  { type:"ab", topic:"Procesy nieodwracalne",
+    ctx:"Kostka lodu topi się w szklance ciepłej herbaty. Po chwili w szklance jest letnia herbata bez lodu.",
+    cmd:"Dokończ zdanie. Wybierz odpowiedź A albo B oraz jej uzasadnienie 1., 2. albo 3.",
+    stem:"Ten proces jest",
+    A:["nieodwracalny,","odwracalny,"], okA:0,
+    R:["sam nie zajdzie w drugą stronę: herbata nie zamrozi kostki z powrotem.","lód można znów zamrozić w zamrażarce, więc wszystko wraca do początku.","energia jest zachowana, więc proces można zawsze odwrócić."], okR:0,
+    wA:[null,"Odwracalny byłby proces, który da się cofnąć tak, żeby i układ, i otoczenie wróciły do stanu początkowego. Letnia herbata nigdy sama się nie rozdzieli na gorącą herbatę i lód."],
+    wR:[null,"Zamrażarka cofa stan kostki, ale zmienia otoczenie: zużywa prąd i oddaje ciepło do kuchni. W procesie odwracalnym otoczenie też musi wrócić do stanu początkowego.","Zachowanie energii (I zasada) nie wystarcza. O kierunku procesów decyduje II zasada: ciepło samo płynie tylko od cieplejszego do chłodniejszego, nigdy odwrotnie."],
+    e:"Poprawnie: <b>A1</b>.<br><b>Zapamiętaj:</b> nieodwracalne są np. wyrównywanie temperatur, tarcie, mieszanie się gazów. Odwracalne to wyidealizowane, bardzo powolne przemiany bez tarcia (np. w cyklu Carnota)." },
+
+  { type:"fill", topic:"Silnik cieplny",
+    ctx:"Silnik cieplny (np. silnik samochodu) pracuje w cyklu: gaz w cylindrze wraca na końcu do stanu początkowego. Silnik ma gorące źródło (grzejnicę) i zimne źródło (chłodnicę).",
+    cmd:"Uzupełnij zdania. Wybierz właściwą odpowiedź w każdej luce.",
+    parts:["Silnik pobiera ciepło z ",
+      {o:["grzejnicy","chłodnicy"], w:"Silnik „żywi się” przepływem ciepła od gorącego do zimnego. Ciepło pobiera z gorącego źródła — grzejnicy (w samochodzie: spalanie paliwa). Chłodnica (w samochodzie: otoczenie) to miejsce, gdzie oddaje resztę."},
+      ", część tego ciepła zamienia na pracę, a resztę ",
+      {o:["oddaje do chłodnicy","zatrzymuje jako energię wewnętrzną"], w:"W cyklu gaz wraca do stanu początkowego, więc jego energia wewnętrzna na koniec jest taka sama jak na początku (ΔU = 0). Nic nie może się w nim „gromadzić” — niewykorzystane ciepło musi trafić do chłodnicy."},
+      ". Silnik cieplny o sprawności 100% jest ",
+      {o:["niemożliwy nawet bez tarcia","możliwy, gdy usuniemy tarcie"], w:"Nawet idealny silnik bez tarcia musi oddać część ciepła do chłodnicy — tak mówi II zasada termodynamiki. Najwyższą możliwą sprawność ma silnik Carnota i zawsze jest ona mniejsza od 100%."},
+      "."],
+    e:"<span class=\"formula\">η = W / Q_pobrane</span>.<br><b>Zapamiętaj:</b> w cyklu ΔU = 0, więc Q_pobrane = W + Q_oddane. Dlatego silnik samochodu zawsze grzeje otoczenie." },
+
+  { type:"pf", topic:"Cykl Carnota",
+    ctx:"Idealny silnik Carnota pracuje między grzejnicą o temperaturze T₁ a chłodnicą o niższej temperaturze T₂. Jego sprawność: <span class=\"formula\">η = 1 − T₂/T₁</span> (temperatury w kelwinach).",
+    cmd:"Oceń prawdziwość poniższych zdań. Zaznacz P, jeśli zdanie jest prawdziwe, albo F – jeśli jest fałszywe.",
+    items:[
+      { s:"Sprawność silnika Carnota zależy tylko od temperatur grzejnicy i chłodnicy.", v:true,
+        e:"We wzorze są tylko T₁ i T₂. Nie ma rodzaju gazu, rozmiaru silnika ani paliwa.",
+        w:"Wzór η = 1 − T₂/T₁ zawiera wyłącznie dwie temperatury. Rodzaj gazu, wielkość silnika ani paliwo nie mają wpływu na sprawność idealnego silnika Carnota." },
+      { s:"Obniżenie temperatury chłodnicy zmniejsza sprawność silnika Carnota.", v:false,
+        e:"Mniejsze T₂ → mniejszy iloraz T₂/T₁ → większa sprawność.",
+        w:"Im zimniejsza chłodnica, tym większa różnica temperatur, z której silnik „korzysta”. We wzorze: T₂ maleje, więc T₂/T₁ maleje, a 1 − T₂/T₁ rośnie." },
+      { s:"Rzeczywisty silnik może mieć wyższą sprawność niż silnik Carnota pracujący między tymi samymi temperaturami.", v:false,
+        e:"Silnik Carnota ma największą możliwą sprawność przy danych temperaturach.",
+        w:"Silnik Carnota to wzór idealny: bez tarcia i strat, same przemiany odwracalne. Rzeczywisty silnik ma straty, więc jego sprawność jest zawsze MNIEJSZA, nigdy większa." }
+    ]},
+
+  { type:"ab", topic:"Pompa ciepła i II zasada",
+    ctx:"Zimą pompa ciepła zasilana prądem pobiera ciepło z zimnego gruntu (ok. 5 °C) i oddaje je do ciepłego domu (ok. 21 °C).",
+    cmd:"Dokończ zdanie. Wybierz odpowiedź A albo B oraz jej uzasadnienie 1., 2. albo 3.",
+    stem:"Pompa ciepła",
+    A:["nie łamie II zasady termodynamiki,","łamie II zasadę termodynamiki,"], okA:0,
+    R:["ciepło płynie od zimniejszego do cieplejszego tylko dzięki dostarczanej pracy.","ciepło nigdy nie może płynąć od ciała zimniejszego do cieplejszego.","grunt ma większą energię wewnętrzną niż powietrze w domu."], okR:0,
+    wA:[null,"II zasada mówi, że ciepło nie płynie od zimnego do ciepłego SAMO z siebie. Pompa ciepła (i lodówka) robi to, ale zużywa pracę sprężarki zasilanej prądem — więc zasady nie łamie."],
+    wR:[null,"To za mocne zdanie. Ciepło nie płynie od zimnego do ciepłego samoistnie, ale może, jeśli dostarczymy pracę. Tak działa każda lodówka.","Kierunek przepływu ciepła zależy od temperatury, a nie od energii wewnętrznej. Poza tym bez pracy sprężarki ciepło z gruntu do domu w ogóle by nie popłynęło."],
+    e:"Poprawnie: <b>A1</b>.<br><b>Zapamiętaj:</b> pompa ciepła to „silnik cieplny działający na odwrót”. Do domu trafia ciepło z gruntu plus energia z prądu. Lodówka robi to samo, tylko chłodzi wnętrze." }
+];
+
+
+const $ = id => document.getElementById(id);
+const L = ["A","B","C","D"];
+const maxPts = t => t.type==="pf" ? t.items.length : t.type==="fill" ? t.parts.filter(p=>typeof p!=="string").length : 1;
+const TOTAL = T.reduce((s,t)=>s+maxPts(t),0);
+let name="", i=0, pts=0, log=[], ans={}, checked=false;
+let isTeacher = false;
+
+$("tTitle").textContent = QUIZ + ": wyniki i klucz";
+$("paste").placeholder = QUIZ + " | Ola K. | 12/16 pkt | do powtórki: zad. 2 (zd. 2), zad. 5";
+
+function shuffle(n){ const a=[...Array(n).keys()]; for(let k=n-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];} return a; }
+function show(id){ for(const s of ["start","quiz","result","teacher"]) $(s).hidden = s!==id; $("teacherBtn").hidden = !(isTeacher && id==="start"); window.scrollTo(0,0); }
+function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
+
+try{ const v=localStorage.getItem("quiz-imie"); if(v) $("imie").value=v; }catch(e){}
+for(const ev of ["input","change","keyup"]) $("imie").addEventListener(ev, () => { if($("imie").value.trim().length >= 2) $("nameMsg").hidden = true; });
+$("imie").addEventListener("keydown", e => { if(e.key==="Enter") { e.preventDefault(); $("startBtn").click(); } });
+$("startBtn").addEventListener("click", () => {
+  if($("imie").value.trim().length < 2){ $("nameMsg").hidden=false; $("imie").focus(); return; }
+  $("nameMsg").hidden=true;
+  name=$("imie").value.trim(); try{ localStorage.setItem("quiz-imie",name); }catch(e){}
+  begin();
+});
+function begin(){ i=0; pts=0; log=[]; show("quiz"); render(); }
+
+function render(){
+  const t=T[i]; ans={}; checked=false;
+  $("qnum").textContent=`Zadanie ${i+1} z ${T.length}`;
+  $("qscore").textContent=`${pts} / ${TOTAL} pkt`;
+  $("qbar").style.width=(i/T.length*100)+"%";
+  const c=$("qcard"); c.innerHTML="";
+  const h=el("div","zhead"); h.append(el("span","z",`Zadanie ${i+1}. (0–${maxPts(t)})`), el("span","t",t.topic)); c.append(h);
+  if(t.ctx) c.append(el("p","ctx",t.ctx));
+  c.append(el("p","cmd",t.cmd));
+  const body=el("div"); c.append(body);
+  if(t.type==="mc") renderMC(t,body);
+  if(t.type==="pf") renderPF(t,body);
+  if(t.type==="fill") renderFill(t,body);
+  if(t.type==="ab") renderAB(t,body);
+  const why=el("div","why"); why.id="why"; why.hidden=true; c.append(why);
+  const b=el("button","btn","Sprawdź"); b.id="checkBtn"; b.disabled=true; b.addEventListener("click",onCheck); c.append(b);
+}
+function ready(n){ $("checkBtn").disabled = Object.keys(ans).length < n; }
+function pick(group, btn, key, val, need){
+  if(checked) return;
+  for(const x of group) x.classList.remove("sel");
+  btn.classList.add("sel"); ans[key]=val; ready(need);
+}
+
+function renderMC(t,body){
+  body.append(el("p",null,t.stem+" …"));
+  const box=el("div","opts"); body.append(box); const btns=[];
+  shuffle(t.opts.length).forEach((src,pos)=>{
+    const b=el("button","opt"); b.dataset.src=src;
+    b.append(el("span","k",L[pos]+"."), el("span",null,t.opts[src]));
+    b.addEventListener("click",()=>pick(btns,b,"x",src,1)); btns.push(b); box.append(b);
+  });
+}
+function renderPF(t,body){
+  const box=el("div","pf"); body.append(box);
+  t.items.forEach((it,k)=>{
+    const r=el("div","pfrow"); r.id=`pf-${k}`;
+    r.append(el("span","n",(k+1)+"."), el("span","s",it.s));
+    const bb=el("div","pfbtns"); const g=[];
+    for(const [lab,val] of [["P",true],["F",false]]){
+      const b=el("button","pfb",lab); b.dataset.v=val; b.setAttribute("aria-label",`Zdanie ${k+1}: ${lab==="P"?"prawda":"fałsz"}`);
+      b.addEventListener("click",()=>pick(g,b,k,val,t.items.length)); g.push(b); bb.append(b);
+    }
+    r.append(bb); box.append(r);
+  });
+}
+function renderFill(t,body){
+  const p=el("p","fill"); body.append(p); let g=0;
+  const need=t.parts.filter(x=>typeof x!=="string").length;
+  for(const part of t.parts){
+    if(typeof part==="string"){ p.append(el("span",null,part)); continue; }
+    const k=g++; const span=el("span","gap"); span.id=`gap-${k}`; const grp=[];
+    span.append(el("span","gaplab",`(${k+1})`));
+    shuffle(part.o.length).forEach(src=>{
+      const b=el("button","pill",part.o[src]); b.dataset.src=src;
+      b.addEventListener("click",()=>pick(grp,b,k,src,need)); grp.push(b); span.append(b);
+    });
+    p.append(span);
+  }
+}
+function renderAB(t,body){
+  body.append(el("p",null,t.stem+" …"));
+  const g=el("div","abgrid"); body.append(g);
+  const r1=el("div","abrow"), ga=[];
+  t.A.forEach((a,k)=>{ const b=el("button","opt"); b.id=`ab-a${k}`; b.dataset.src=k;
+    b.append(el("span","k",L[k]+"."), el("span",null,a));
+    b.addEventListener("click",()=>pick(ga,b,"a",k,2)); ga.push(b); r1.append(b); });
+  g.append(r1, el("p","muted","ponieważ"));
+  const r2=el("div","opts"), gr=[];
+  t.R.forEach((r,k)=>{ const b=el("button","opt"); b.id=`ab-r${k}`; b.dataset.src=k;
+    b.append(el("span","k",(k+1)+"."), el("span",null,r));
+    b.addEventListener("click",()=>pick(gr,b,"r",k,2)); gr.push(b); r2.append(b); });
+  g.append(r2);
+}
+
+const stripT = s => String(s).replace(/<[^>]*>/g,"");
+function wrongBox(title, items){
+  const d=el("div","wrongbox"); d.append(el("span","h",title));
+  for(const it of items) d.append(el("span",null,(it.lead?`<b>${it.lead}</b> `:"")+it.text));
+  return d;
+}
+function stepsBox(steps){
+  const d=el("div","stepsbox"); d.append(el("span","h","Rozwiązanie krok po kroku"));
+  const ol=el("ol"); for(const s of steps) ol.append(el("li",null,s)); d.append(ol); return d;
+}
+function mark(btn, good){ btn.classList.add(good?"ok":"bad"); }
+
+function onCheck(){
+  if(checked) return; checked=true;
+  const t=T[i]; let got=0; const why=$("why"); why.innerHTML=""; const badp=[];
+  document.querySelectorAll("#qcard button.opt, #qcard button.pill, #qcard button.pfb").forEach(b=>b.disabled=true);
+  if(t.type==="mc"){
+    got = ans.x===t.ok ? 1 : 0;
+    document.querySelectorAll("#qcard .opt").forEach(b=>{ const s=+b.dataset.src; if(s===t.ok) mark(b,true); else if(s===ans.x) mark(b,false); });
+    why.append(el("span","verdict "+(got?"good":"wrong"), got?"Dobrze. 1 pkt.":"Źle. 0 pkt. Poprawnie: „"+t.opts[t.ok]+"”"));
+    if(!got && t.w && t.w[ans.x]) why.append(wrongBox("Gdzie był błąd", [{lead:`Twoja odpowiedź „${t.opts[ans.x]}”:`, text:t.w[ans.x]}]));
+    if(!got && t.steps) why.append(stepsBox(t.steps));
+    why.append(el("span",null,t.e));
+  }
+  if(t.type==="pf"){
+    t.items.forEach((it,k)=>{
+      const good = ans[k]===it.v; if(good) got++; else badp.push("zd. "+(k+1));
+      const row=$(`pf-${k}`);
+      row.querySelectorAll(".pfb").forEach(b=>{ const v=b.dataset.v==="true"; if(v===it.v) mark(b,true); else if(b.classList.contains("sel")) mark(b,false); });
+      const note=el("div","note"); note.append(el("span",null,`<b>${it.v?"P":"F"}.</b> ${it.e}`));
+      if(!good && it.w) note.append(wrongBox(`Zaznaczyłeś/aś ${it.v?"F":"P"} — gdzie był błąd`, [{text:it.w}]));
+      row.append(note);
+    });
+    why.append(el("span","verdict "+(got===t.items.length?"good":"wrong"), `${got} z ${t.items.length} pkt. Wyjaśnienia są pod każdym zdaniem${got<t.items.length?", a przy błędnych dokładniej, na czerwono":""}.`));
+  }
+  if(t.type==="fill"){
+    let k=0; const right=[], wr=[];
+    for(const part of t.parts){ if(typeof part==="string") continue;
+      const good = ans[k]===0; if(good) got++; else { badp.push("luka "+(k+1)); if(part.w) wr.push({lead:`(${k+1}) Twój wybór „${part.o[ans[k]]}”:`, text:part.w}); }
+      $(`gap-${k}`).querySelectorAll(".pill").forEach(b=>{ const s=+b.dataset.src; if(s===0) mark(b,true); else if(s===ans[k]) mark(b,false); });
+      right.push(`(${k+1}) ${part.o[0]}`); k++; }
+    why.append(el("span","verdict "+(got===k?"good":"wrong"), `${got} z ${k} pkt. Poprawnie: ${right.join("; ")}.`));
+    if(wr.length) why.append(wrongBox("Gdzie był błąd", wr));
+    if(got<k && t.steps) why.append(stepsBox(t.steps));
+    why.append(el("span",null,t.e));
+  }
+  if(t.type==="ab"){
+    got = (ans.a===t.okA && ans.r===t.okR) ? 1 : 0;
+    document.querySelectorAll("#qcard [id^=ab-a]").forEach(b=>{ const s=+b.dataset.src; if(s===t.okA) mark(b,true); else if(s===ans.a) mark(b,false); });
+    document.querySelectorAll("#qcard [id^=ab-r]").forEach(b=>{ const s=+b.dataset.src; if(s===t.okR) mark(b,true); else if(s===ans.r) mark(b,false); });
+    let msg = "Dobrze. 1 pkt.";
+    if(!got){
+      if(ans.a===t.okA) msg="Źle. 0 pkt. Odpowiedź A/B dobra, ale uzasadnienie złe — punkt jest tylko za komplet.";
+      else if(ans.r===t.okR) msg="Źle. 0 pkt. Uzasadnienie dobre, ale odpowiedź A/B zła — punkt jest tylko za komplet.";
+      else msg="Źle. 0 pkt. Odpowiedź i uzasadnienie są złe.";
+    }
+    why.append(el("span","verdict "+(got?"good":"wrong"), msg));
+    const wr=[];
+    if(ans.a!==t.okA && t.wA && t.wA[ans.a]) wr.push({lead:`Twój wybór ${L[ans.a]} („${t.A[ans.a]}”):`, text:t.wA[ans.a]});
+    if(ans.r!==t.okR && t.wR && t.wR[ans.r]) wr.push({lead:`Twoje uzasadnienie ${ans.r+1}.:`, text:t.wR[ans.r]});
+    if(wr.length) why.append(wrongBox("Gdzie był błąd", wr));
+    if(!got && t.steps) why.append(stepsBox(t.steps));
+    why.append(el("span",null,t.e));
+  }
+  pts+=got; log.push({n:i+1, got, max:maxPts(t), parts:badp});
+  $("qscore").textContent=`${pts} / ${TOTAL} pkt`;
+  why.hidden=false;
+  const b=$("checkBtn"); b.textContent = i===T.length-1 ? "Zobacz wynik" : "Następne zadanie";
+  b.disabled=false; b.removeEventListener("click",onCheck);
+  b.addEventListener("click",()=>{ i++; if(i<T.length) render(); else finish(); },{once:true});
+  why.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"nearest"});
+}
+
+function finish(){
+  $("rname").textContent=name;
+  $("rscore").innerHTML=`${pts}<small> / ${TOTAL} pkt</small>`;
+  const miss=log.filter(l=>l.got<l.max);
+  $("rcopy").textContent=`${QUIZ} | ${name} | ${pts}/${TOTAL} pkt | do powtórki: ${miss.length?miss.map(l=>"zad. "+l.n+(l.parts.length?" ("+l.parts.join(", ")+")":"")).join(", "):"nic"}`;
+  const ul=$("rmiss"); ul.innerHTML="";
+  if(!miss.length) ul.append(el("li",null,"Wszystko dobrze. Nic do powtórki."));
+  for(const l of miss){ const t=T[l.n-1]; const li=el("li");
+    li.append(el("span","n",`Zadanie ${l.n} · ${l.got} z ${l.max} pkt`), el("span",null,t.topic));
+    ul.append(li); }
+  $("copyMsg").hidden=true; show("result");
+}
+
+$("copyBtn").addEventListener("click",()=>{
+  const text=$("rcopy").textContent, msg=$("copyMsg");
+  const done=()=>{ msg.textContent="Skopiowano. Teraz wklej na Discordzie."; msg.hidden=false; };
+  const fb=()=>{ const r=document.createRange(); r.selectNodeContents($("rcopy")); const s=getSelection(); s.removeAllRanges(); s.addRange(r);
+    msg.textContent="Tekst zaznaczony. Przytrzymaj go i wybierz „Kopiuj”."; msg.hidden=false; };
+  try{ navigator.clipboard.writeText(text).then(done,fb); }catch(e){ fb(); }
+});
+$("againBtn").addEventListener("click",begin);
+
+
+const escT = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+function keyHTML(t){
+  if(t.type==="mc") return `<p>${t.stem} …</p><p class="ans">→ ${t.opts[t.ok]}</p>`;
+  if(t.type==="ab") return `<p>${t.stem} … ponieważ …</p><p class="ans">→ ${L[t.okA]}${t.okR+1}: ${t.A[t.okA]} ${t.R[t.okR]}</p>`;
+  if(t.type==="pf") return t.items.map((it,k)=>`<p>${k+1}. ${it.s} <span class="ans">${it.v?"P":"F"}</span></p>`).join("");
+  if(t.type==="fill"){ let g=0; return "<p>"+t.parts.map(p=>typeof p==="string"?p:`<span class="ans">[(${++g}) ${p.o[0]}]</span>`).join("")+"</p>"; }
+}
+function renderKey(){
+  const box=$("key"); box.innerHTML="";
+  T.forEach((t,k)=>{
+    const d=el("div","keyitem");
+    d.append(el("div","zhead",`<span class="z">Zadanie ${k+1}. (0–${maxPts(t)})</span><span class="t">${escT(t.topic)}</span>`));
+    if(t.ctx) d.append(el("p","ctx",t.ctx));
+    d.append(el("div",null,keyHTML(t)));
+    if(t.steps) d.append(el("p","muted",t.steps.join(" → ")));
+    if(t.e) d.append(el("p","muted",t.e));
+    box.append(d);
+  });
+}
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+function parseResults(text){
+  const re=new RegExp(reEsc(QUIZ)+"\\s*\\|\\s*([^|\\n]+?)\\s*\\|\\s*(\\d+)\\s*\\/\\s*(\\d+)\\s*pkt\\s*\\|\\s*do powtórki:\\s*([^\\n]*)","g");
+  const byName=new Map(); let m;
+  while((m=re.exec(text))){
+    const miss=[]; const zr=/zad\.\s*(\d+)(?:\s*\(([^)]*)\))?/g; let z;
+    while((z=zr.exec(m[4]))) miss.push({n:+z[1], parts:z[2]?z[2].split(",").map(s=>s.trim()).filter(Boolean):[]});
+    byName.set(m[1].trim(), {name:m[1].trim(), pts:+m[2], max:+m[3], miss, raw:m[4].trim()});
+  }
+  return [...byName.values()];
+}
+function renderStats(){
+  const S=parseResults($("paste").value), out=$("stats"); out.innerHTML="";
+  if(!S.length){ $("statInfo").textContent=`Nie znalazłam żadnego wyniku. Sprawdź, czy wklejone linijki zaczynają się od „${QUIZ} |”.`; return; }
+  const avg=(S.reduce((s,x)=>s+x.pts,0)/S.length).toFixed(1).replace(".",",");
+  $("statInfo").textContent=`Uczniów: ${S.length} · średnio ${avg} / ${TOTAL} pkt`;
+  let rows="";
+  T.forEach((t,k)=>{
+    const n=k+1, who=S.filter(s=>s.miss.some(x=>x.n===n));
+    const pct=Math.round(who.length/S.length*100);
+    const cnt={}; who.forEach(s=>s.miss.filter(x=>x.n===n).forEach(x=>x.parts.forEach(p=>cnt[p]=(cnt[p]||0)+1)));
+    const parts=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).map(([p,c])=>`${p}: ${c}×`).join(", ");
+    rows+=`<tr><td><b>${n}.</b> ${escT(t.topic)}</td><td class="${pct>=50?"hot":""}"><span class="meter"><i style="width:${pct}%"></i></span>${who.length} z ${S.length}</td><td>${parts?escT(parts):(who.length?"całe zadanie":"–")}</td></tr>`;
+  });
+  const t1=el("div","tablewrap",`<table><thead><tr><th>Zadanie</th><th>Ilu straciło punkty</th><th>Gdzie najczęściej</th></tr></thead><tbody>${rows}</tbody></table>`);
+  const srows=S.sort((a,b)=>a.pts-b.pts).map(s=>`<tr><td>${escT(s.name)}</td><td>${s.pts}/${s.max}</td><td>${escT(s.raw)}</td></tr>`).join("");
+  const t2=el("div","tablewrap",`<table><thead><tr><th>Uczeń</th><th>Wynik</th><th>Do powtórki</th></tr></thead><tbody>${srows}</tbody></table>`);
+  out.append(el("p","muted","Na czerwono: zadania, w których punkty straciła co najmniej połowa uczniów. Od nich zacznij lekcję."), t1, el("h2",null,"Uczniowie"), t2);
+}
+$("statBtn").addEventListener("click",renderStats);
+$("teacherBtn").addEventListener("click",()=>{ renderKey(); show("teacher"); });
+$("backBtn").addEventListener("click",()=>show("start"));
+
+</script>
+</body>
+</html>
